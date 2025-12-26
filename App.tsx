@@ -29,7 +29,7 @@ const App: React.FC = () => {
   const trackingRef = useRef<boolean>(false);
 
   useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('aura_onboarded');
+    const hasSeenOnboarding = localStorage.getItem('nuero_onboarded');
     if (!hasSeenOnboarding && status === 'ready') {
       setShowOnboarding(true);
     }
@@ -39,7 +39,7 @@ const App: React.FC = () => {
   useEffect(() => {
     let timer: number;
     if (status === 'ready' && !showOnboarding) {
-      const hasGivenFeedback = localStorage.getItem('aura_feedback_given');
+      const hasGivenFeedback = localStorage.getItem('nuero_feedback_given');
       if (!hasGivenFeedback) {
         timer = window.setTimeout(() => {
           setShowFeedback(true);
@@ -49,7 +49,7 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, [status, showOnboarding]);
 
-  const startAura = async () => {
+  const startNuero = async () => {
     setStatus('initializing');
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
@@ -76,12 +76,12 @@ const App: React.FC = () => {
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
-    localStorage.setItem('aura_onboarded', 'true');
+    localStorage.setItem('nuero_onboarded', 'true');
   };
 
   const handleFeedbackClose = () => {
     setShowFeedback(false);
-    localStorage.setItem('aura_feedback_given', 'true');
+    localStorage.setItem('nuero_feedback_given', 'true');
   };
 
   const replayBriefing = () => {
@@ -233,7 +233,7 @@ const App: React.FC = () => {
                   <Zap className="w-3 h-3 fill-current" /> System Ready
                 </div>
                 <h2 className="text-6xl lg:text-8xl font-black tracking-tighter uppercase italic leading-[0.85] text-white">
-                  Aura<br/><span className="text-[#CCFF00]">Hands</span>
+                  Nuero<br/><span className="text-[#CCFF00]">Hands</span>
                 </h2>
                 <p className="text-white/30 text-lg lg:text-xl font-medium max-w-md leading-snug">
                   High-fidelity kinetic synthesis environment powered by real-time hand presence.
@@ -243,7 +243,7 @@ const App: React.FC = () => {
               <div className="flex flex-col gap-8 items-start">
                 {status === 'idle' && (
                   <button 
-                    onClick={startAura} 
+                    onClick={startNuero} 
                     className="group relative px-8 lg:px-10 py-4 lg:py-5 bg-[#CCFF00] text-black font-bold uppercase tracking-widest transition-all hover:pr-14 active:scale-95 pointer-events-auto text-sm lg:text-base"
                   >
                     Initialize Core
@@ -265,7 +265,7 @@ const App: React.FC = () => {
                     <p className="mono text-red-500 text-xs font-bold uppercase flex items-center gap-2">
                       <AlertCircle className="w-4 h-4" /> Error: {errorMessage}
                     </p>
-                    <button onClick={startAura} className="px-6 py-3 border border-red-500/20 text-red-500 mono uppercase text-[10px] font-bold pointer-events-auto hover:bg-red-500/10 transition-all">Re-establish Link</button>
+                    <button onClick={startNuero} className="px-6 py-3 border border-red-500/20 text-red-500 mono uppercase text-[10px] font-bold pointer-events-auto hover:bg-red-500/10 transition-all">Re-establish Link</button>
                   </div>
                 )}
               </div>

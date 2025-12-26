@@ -16,7 +16,7 @@ interface Message {
 const SEQUENCE: Message[] = [
   { 
     text: "Neural Link Established.", 
-    subtext: "System identity: AURA. Initializing kinetic synthesis core...",
+    subtext: "System identity: NUERO. Initializing kinetic synthesis core...",
     icon: Cpu
   },
   { 

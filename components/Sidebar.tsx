@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onRe
         {/* Brand Header */}
         <div className="p-6 lg:p-8 border-b border-white/5 bg-white/[0.02]">
           <div className="flex items-center justify-between mb-2">
-            <h1 className="text-2xl font-bold tracking-tighter uppercase italic">Aura<span className="text-[#CCFF00]">Hands</span></h1>
+            <h1 className="text-2xl font-bold tracking-tighter uppercase italic">Nuero<span className="text-[#CCFF00]">Hands</span></h1>
             <div className="flex items-center gap-2 px-2 py-1 bg-[#CCFF00]/10 border border-[#CCFF00]/20 rounded">
               <Activity className="w-3 h-3 text-[#CCFF00]" />
               <span className="text-[9px] mono font-bold text-[#CCFF00]">v2.4.0</span>
