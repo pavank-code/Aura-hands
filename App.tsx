@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AlertCircle, Zap, Instagram, Github, Camera, CornerDownRight } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import Sidebar from './components/Sidebar';
 import Visualizer from './components/Visualizer';
 import Cursor from './components/Cursor';
@@ -154,6 +155,7 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden text-white bg-[#020202]">
+      <Analytics />
       <video ref={videoRef} autoPlay playsInline muted className="fixed opacity-0 pointer-events-none" />
       
       {/* Interface Layer */}
