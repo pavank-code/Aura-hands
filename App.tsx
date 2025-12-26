@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import Visualizer from './components/Visualizer';
 import Onboarding from './components/Onboarding';
 import FeedbackPopup from './components/FeedbackPopup';
+import ConsentBanner from './components/ConsentBanner';
 import { handDetectionService } from './services/handDetectionService';
 import { ParticleConfig, GestureState, HandData } from './types';
 import { DEFAULT_CONFIG } from './constants';
@@ -222,6 +223,9 @@ const App: React.FC = () => {
       {showFeedback && (
         <FeedbackPopup onClose={handleFeedbackClose} />
       )}
+
+      {/* Consent Layer */}
+      <ConsentBanner />
 
       {/* Splash Environment - Responsive Stack */}
       {status !== 'ready' && (

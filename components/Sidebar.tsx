@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Settings, RefreshCcw, Box, Circle, Heart, Disc, Dna, Activity, Zap, Info, Menu, X as CloseIcon, ChevronUp, ChevronDown } from 'lucide-react';
+import { Settings, RefreshCcw, Box, Circle, Heart, Disc, Dna, Activity, Zap, Info, Menu, X as CloseIcon, Shield } from 'lucide-react';
 import { ParticleConfig, GestureState, VisualShape } from '../types';
 import { MIN_PARTICLES, MAX_PARTICLES } from '../constants';
 
@@ -23,6 +23,10 @@ const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onRe
     { id: 'heart', icon: Heart },
     { id: 'dna', icon: Dna },
   ];
+
+  const handleOpenPrivacy = () => {
+    window.dispatchEvent(new CustomEvent('reopen-privacy-settings'));
+  };
 
   return (
     <>
@@ -151,9 +155,9 @@ const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onRe
           </div>
         </div>
 
-        {/* Footer Instructions - Hidden on small mobile screens to save space if panel is open */}
+        {/* Footer Instructions */}
         <div className="p-8 border-t border-white/5 bg-white/[0.01]">
-          <div className="grid grid-cols-1 gap-3 mono text-[9px] uppercase tracking-wider text-white/40">
+          <div className="grid grid-cols-1 gap-3 mono text-[9px] uppercase tracking-wider text-white/40 mb-4">
             <div className="flex justify-between border-b border-white/5 pb-1">
               <span>Zoom</span>
               <span className="text-white/60">Hand Dist</span>
@@ -167,6 +171,13 @@ const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onRe
               <span className="text-white/60">Compress</span>
             </div>
           </div>
+          
+          <button 
+            onClick={handleOpenPrivacy}
+            className="flex items-center gap-2 mono text-[8px] uppercase tracking-[0.2em] text-white/20 hover:text-[#CCFF00]/60 transition-colors py-2"
+          >
+            <Shield className="w-2 h-2" /> Privacy Settings
+          </button>
         </div>
       </div>
 
