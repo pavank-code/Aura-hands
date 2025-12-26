@@ -39,7 +39,7 @@ const FeedbackPopup: React.FC<FeedbackPopupProps> = ({ onClose }) => {
       }
 
       setStatus('success');
-      localStorage.setItem('aura_feedback_given', 'true');
+      localStorage.setItem('nuero_feedback_given', 'true');
       setTimeout(onClose, 2000);
     } catch (err: any) {
       const msg = err.message || 'Unknown network error';
