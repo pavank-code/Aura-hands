@@ -3,8 +3,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AlertCircle, Zap, Instagram, Github, Camera, CornerDownRight } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import Visualizer from './components/Visualizer';
-import Cursor from './components/Cursor';
 import Onboarding from './components/Onboarding';
+import FeedbackPopup from './components/FeedbackPopup';
 import { handDetectionService } from './services/handDetectionService';
 import { ParticleConfig, GestureState, HandData } from './types';
 import { DEFAULT_CONFIG } from './constants';
@@ -23,17 +23,31 @@ const App: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'initializing' | 'ready' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackingRef = useRef<boolean>(false);
 
-  // Check if user has been onboarded before
   useEffect(() => {
     const hasSeenOnboarding = localStorage.getItem('aura_onboarded');
     if (!hasSeenOnboarding && status === 'ready') {
       setShowOnboarding(true);
     }
   }, [status]);
+
+  // Trigger feedback popup after 30 seconds of being ready
+  useEffect(() => {
+    let timer: number;
+    if (status === 'ready' && !showOnboarding) {
+      const hasGivenFeedback = localStorage.getItem('aura_feedback_given');
+      if (!hasGivenFeedback) {
+        timer = window.setTimeout(() => {
+          setShowFeedback(true);
+        }, 30000);
+      }
+    }
+    return () => clearTimeout(timer);
+  }, [status, showOnboarding]);
 
   const startAura = async () => {
     setStatus('initializing');
@@ -63,6 +77,11 @@ const App: React.FC = () => {
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
     localStorage.setItem('aura_onboarded', 'true');
+  };
+
+  const handleFeedbackClose = () => {
+    setShowFeedback(false);
+    localStorage.setItem('aura_feedback_given', 'true');
   };
 
   const replayBriefing = () => {
@@ -129,22 +148,22 @@ const App: React.FC = () => {
 
   const Signature = ({ className = "" }: { className?: string }) => (
     <div className={`flex flex-col items-start mono ${className}`}>
-      <div className="flex items-center gap-2 text-[9px] text-white/30 uppercase tracking-[0.4em] font-bold mb-1">
+      <div className="flex items-center gap-2 text-[8px] lg:text-[9px] text-white/30 uppercase tracking-[0.4em] font-bold mb-1">
         <CornerDownRight className="w-2 h-2" /> Engineered By
       </div>
-      <h3 className="text-xl font-bold tracking-tighter uppercase italic leading-none mb-4">Pavan <span className="text-[#CCFF00]">/</span> Team401forbidden</h3>
+      <h3 className="text-lg lg:text-xl font-bold tracking-tighter uppercase italic leading-none mb-4">Pavan <span className="text-[#CCFF00]">/</span> Team401forbidden</h3>
       <div className="flex gap-2">
         <a 
           href="https://instagram.com/notpavanistg" 
           target="_blank" rel="noopener noreferrer" 
-          className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 hover:border-[#CCFF00]/50 hover:bg-[#CCFF00]/5 transition-all text-[9px] mono uppercase font-bold text-white/40 hover:text-[#CCFF00] pointer-events-auto"
+          className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 hover:border-[#CCFF00]/50 hover:bg-[#CCFF00]/5 transition-all text-[8px] mono uppercase font-bold text-white/40 hover:text-[#CCFF00] pointer-events-auto"
         >
           <Instagram className="w-3 h-3" /> @notpavanistg
         </a>
         <a 
           href="https://github.com/pavank-code" 
           target="_blank" rel="noopener noreferrer" 
-          className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 hover:border-[#CCFF00]/50 hover:bg-[#CCFF00]/5 transition-all text-[9px] mono uppercase font-bold text-white/40 hover:text-[#CCFF00] pointer-events-auto"
+          className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 hover:border-[#CCFF00]/50 hover:bg-[#CCFF00]/5 transition-all text-[8px] mono uppercase font-bold text-white/40 hover:text-[#CCFF00] pointer-events-auto"
         >
           <Github className="w-3 h-3" /> pavank-code
         </a>
@@ -157,7 +176,7 @@ const App: React.FC = () => {
       <video ref={videoRef} autoPlay playsInline muted className="fixed opacity-0 pointer-events-none" />
       
       {/* Interface Layer */}
-      <div className={`absolute inset-0 z-10 pointer-events-none transition-all duration-1000 ${status === 'ready' ? 'opacity-100' : 'opacity-0'} ${showOnboarding ? 'blur-md grayscale brightness-50' : ''}`}>
+      <div className={`absolute inset-0 z-10 pointer-events-none transition-all duration-1000 ${status === 'ready' ? 'opacity-100' : 'opacity-0'} ${showOnboarding || showFeedback ? 'blur-md grayscale brightness-50' : ''}`}>
         <Sidebar 
           config={config} 
           setConfig={handleConfigChange} 
@@ -167,18 +186,15 @@ const App: React.FC = () => {
           trackingActive={gestureState.hands.length > 0}
         />
         
-        {/* Dynamic Cursor */}
-        <Cursor gestureState={gestureState} config={config} />
-        
-        {/* Subtle Branding Integration */}
-        <div className="fixed bottom-10 right-10 z-50">
-          <Signature />
+        {/* Responsive Signature Positioning */}
+        <div className="fixed bottom-6 right-6 lg:bottom-10 lg:right-10 z-[40]">
+          <Signature className="items-end text-right" />
         </div>
 
-        {/* Diagnostic Input Preview */}
-        <div className="fixed top-10 right-10 w-64 h-48 bg-black/40 border border-white/10 overflow-hidden shadow-2xl">
-          <div className="absolute top-2 left-3 z-10 mono text-[8px] uppercase tracking-widest text-[#CCFF00] bg-black/60 px-2 py-0.5 border border-[#CCFF00]/20">
-            Sensor Feed: Primary
+        {/* Diagnostic Input Preview - Moved to Top Left on Mobile */}
+        <div className="fixed top-6 left-6 lg:top-10 lg:left-auto lg:right-10 w-32 h-24 lg:w-64 lg:h-48 bg-black/40 border border-white/10 overflow-hidden shadow-2xl z-[45]">
+          <div className="absolute top-1 left-2 z-10 mono text-[6px] lg:text-[8px] uppercase tracking-widest text-[#CCFF00] bg-black/60 px-1 py-0.5 border border-[#CCFF00]/20">
+            Feed_01
           </div>
           {stream && (
             <video 
@@ -188,7 +204,7 @@ const App: React.FC = () => {
               style={{ transform: 'scaleX(-1)' }}
             />
           )}
-          <div className="absolute inset-0 border-[20px] border-transparent pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, transparent 0%, black 100%)' }} />
+          <div className="absolute inset-0 border-[10px] lg:border-[20px] border-transparent pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, transparent 0%, black 100%)' }} />
         </div>
       </div>
 
@@ -202,19 +218,24 @@ const App: React.FC = () => {
         />
       )}
 
-      {/* Splash Environment */}
+      {/* Feedback Popup Layer */}
+      {showFeedback && (
+        <FeedbackPopup onClose={handleFeedbackClose} />
+      )}
+
+      {/* Splash Environment - Responsive Stack */}
       {status !== 'ready' && (
-        <div className="fixed inset-0 bg-[#020202] flex items-center justify-center z-[100] p-12">
-          <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            <div className="space-y-12">
+        <div className="fixed inset-0 bg-[#020202] flex items-center justify-center z-[100] p-6 lg:p-12 overflow-y-auto">
+          <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div className="space-y-8 lg:space-y-12">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-3 px-3 py-1 bg-[#CCFF00]/10 border border-[#CCFF00]/20 text-[#CCFF00] mono text-[10px] font-bold uppercase tracking-[0.3em]">
                   <Zap className="w-3 h-3 fill-current" /> System Ready
                 </div>
-                <h2 className="text-8xl font-black tracking-tighter uppercase italic leading-[0.85] text-white">
+                <h2 className="text-6xl lg:text-8xl font-black tracking-tighter uppercase italic leading-[0.85] text-white">
                   Aura<br/><span className="text-[#CCFF00]">Hands</span>
                 </h2>
-                <p className="text-white/30 text-xl font-medium max-w-md leading-snug">
+                <p className="text-white/30 text-lg lg:text-xl font-medium max-w-md leading-snug">
                   High-fidelity kinetic synthesis environment powered by real-time hand presence.
                 </p>
               </div>
@@ -223,7 +244,7 @@ const App: React.FC = () => {
                 {status === 'idle' && (
                   <button 
                     onClick={startAura} 
-                    className="group relative px-10 py-5 bg-[#CCFF00] text-black font-bold uppercase tracking-widest transition-all hover:pr-14 active:scale-95 pointer-events-auto"
+                    className="group relative px-8 lg:px-10 py-4 lg:py-5 bg-[#CCFF00] text-black font-bold uppercase tracking-widest transition-all hover:pr-14 active:scale-95 pointer-events-auto text-sm lg:text-base"
                   >
                     Initialize Core
                     <CornerDownRight className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all" />
@@ -231,8 +252,8 @@ const App: React.FC = () => {
                 )}
 
                 {status === 'initializing' && (
-                  <div className="flex flex-col gap-2">
-                    <div className="w-48 h-1 bg-white/10 overflow-hidden">
+                  <div className="flex flex-col gap-3">
+                    <div className="w-48 lg:w-64 h-1 bg-white/10 overflow-hidden">
                       <div className="w-1/2 h-full bg-[#CCFF00] animate-[shimmer_1.5s_infinite]" />
                     </div>
                     <span className="mono text-[9px] uppercase tracking-widest text-[#CCFF00] animate-pulse">Syncing Neural Buffers...</span>

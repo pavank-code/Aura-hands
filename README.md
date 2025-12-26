@@ -1,39 +1,20 @@
-This is a real-time particle simulation with:
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
 
-A dark, infinite space environment
+# Run and deploy your AI Studio app
 
-Neon, glowing particles that respond to movement
+This contains everything you need to run your app locally.
 
-Hand + camera interaction
+View your app in AI Studio: https://ai.studio/apps/drive/1-XSSEcJmj7yO_KQinzMG8WYgcuycHh2y
 
-A cinematic onboarding experience inspired by sci-fi interfaces
+## Run Locally
 
-Smooth transitions, subtle motion, and intentional pacing
+**Prerequisites:**  Node.js
 
-It’s meant to feel like you're interacting with energy — not clicking buttons.
 
-The system reacts to you.
-
-Your movement influences:
-
-Direction
-
-Intensity
-
-Compression and expansion
-
-Flow and stillness
-
-Every interaction is designed to feel organic, not mechanical.
-
-How to Interact
-
-Move your hand to influence particles
-
-Slow movements create flow
-
-Fast movements create energy bursts
-
-Stay still to watch the system settle
-
-The experience adapts to you.
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

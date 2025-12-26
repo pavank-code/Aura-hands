@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronRight, X, Cpu, ShieldCheck, Zap, Layers } from 'lucide-react';
+import { ChevronRight, Cpu, ShieldCheck, Zap, Layers } from 'lucide-react';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -15,28 +15,28 @@ interface Message {
 
 const SEQUENCE: Message[] = [
   { 
-    text: "Neural link established.", 
+    text: "Neural Link Established.", 
     subtext: "System identity: AURA. Initializing kinetic synthesis core...",
     icon: Cpu
   },
   { 
     text: "Welcome, Operator.", 
-    subtext: "I am your interface assistant. We are currently calibrated to your local environment.",
+    subtext: "I am your interface assistant. Calibrating to spatial presence...",
     icon: ShieldCheck
   },
   { 
-    text: "Motion is energy.", 
-    subtext: "Every gesture you make influences the particle matrix. Separation drives expansion, clenching induces compression.",
+    text: "Motion is Energy.", 
+    subtext: "Gently move your hands to influence the particle matrix. Separation drives expansion.",
     icon: Zap
   },
   { 
-    text: "You are the conductor.", 
-    subtext: "Your dominant hand dictates spatial orientation. Move with intention. The system is yours.",
+    text: "You are the Conductor.", 
+    subtext: "Dominant hand dictates orientation. For mobile, prop your device for best tracking.",
     icon: Layers
   },
   { 
     text: "Engage.", 
-    subtext: "Core initialization complete. Ready for primary input.",
+    subtext: "Core initialization complete. Ready for primary input stream.",
   }
 ];
 
@@ -89,7 +89,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, accentColor }) => {
   return (
     <div className={`fixed inset-0 z-[100] flex items-center justify-center transition-all duration-1000 ${isExiting ? 'opacity-0 scale-105' : 'opacity-100'}`}>
       {/* Cinematic Background Overlays */}
-      <div className="absolute inset-0 bg-[#020202]/80 backdrop-blur-xl" />
+      <div className="absolute inset-0 bg-[#020202]/90 backdrop-blur-2xl" />
       
       {/* Animated Sci-Fi Grid */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
@@ -97,29 +97,29 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, accentColor }) => {
       
       {/* Scanning Line */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="w-full h-[2px] bg-[#CCFF00]/10 absolute top-0 animate-[scan_4s_linear_infinite]" />
+        <div className="w-full h-[1px] bg-[#CCFF00]/20 absolute top-0 animate-[scan_4s_linear_infinite]" />
       </div>
 
-      <div className="relative w-full max-w-2xl px-10 text-center space-y-8">
+      <div className="relative w-full max-w-2xl px-6 lg:px-10 text-center space-y-6 lg:space-y-8">
         {/* Step Indicator */}
-        <div className="flex justify-center gap-2 mb-12">
+        <div className="flex justify-center gap-1.5 lg:gap-2 mb-8 lg:mb-12">
           {SEQUENCE.map((_, i) => (
             <div 
               key={i} 
-              className={`h-0.5 transition-all duration-500 ${i === step ? 'w-8 bg-[#CCFF00]' : 'w-2 bg-white/10'}`} 
+              className={`h-0.5 transition-all duration-500 ${i === step ? 'w-6 lg:w-8 bg-[#CCFF00]' : 'w-1.5 lg:w-2 bg-white/10'}`} 
             />
           ))}
         </div>
 
         {/* Content Area */}
-        <div className="min-h-[200px] flex flex-col items-center justify-center">
+        <div className="min-h-[160px] lg:min-h-[200px] flex flex-col items-center justify-center">
           {Icon && (
-            <div className="mb-6 p-4 rounded-full border border-[#CCFF00]/20 bg-[#CCFF00]/5 animate-pulse">
-              <Icon className="w-6 h-6 text-[#CCFF00]" />
+            <div className="mb-4 lg:mb-6 p-3 lg:p-4 rounded-full border border-[#CCFF00]/20 bg-[#CCFF00]/5 animate-pulse">
+              <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-[#CCFF00]" />
             </div>
           )}
           
-          <h2 className="text-4xl font-bold tracking-tighter uppercase italic text-white mb-4">
+          <h2 className="text-2xl lg:text-4xl font-bold tracking-tighter uppercase italic text-white mb-3 lg:mb-4 px-4">
             <TypewriterText 
               key={`title-${step}`} 
               text={SEQUENCE[step].text} 
@@ -127,29 +127,29 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, accentColor }) => {
             />
           </h2>
           
-          <div className={`transition-all duration-1000 h-12 ${showSubtext ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <p className="mono text-white/40 text-sm uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto">
+          <div className={`transition-all duration-1000 h-10 lg:h-12 ${showSubtext ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <p className="mono text-white/40 text-[10px] lg:text-sm uppercase tracking-[0.2em] leading-relaxed max-w-sm lg:max-w-lg mx-auto px-4">
               {SEQUENCE[step].subtext}
             </p>
           </div>
         </div>
 
         {/* Interaction Bar */}
-        <div className="flex flex-col items-center gap-6 pt-12">
+        <div className="flex flex-col items-center gap-4 lg:gap-6 pt-8 lg:pt-12">
           <button 
             onClick={nextStep}
-            className="group relative flex items-center gap-4 px-12 py-4 bg-[#CCFF00] text-black font-bold uppercase tracking-widest transition-all hover:pr-16 active:scale-95 pointer-events-auto overflow-hidden"
+            className="group relative flex items-center justify-center gap-4 w-full max-w-xs lg:max-w-none lg:w-auto px-8 lg:px-12 py-3.5 lg:py-4 bg-[#CCFF00] text-black font-bold uppercase tracking-widest transition-all hover:pr-16 active:scale-95 pointer-events-auto overflow-hidden text-xs lg:text-sm"
           >
-            <span className="relative z-10">{step === SEQUENCE.length - 1 ? 'Begin Interaction' : 'Acknowledge'}</span>
-            <ChevronRight className="absolute right-6 w-5 h-5 transition-all group-hover:translate-x-1" />
+            <span className="relative z-10">{step === SEQUENCE.length - 1 ? 'Execute Sync' : 'Acknowledge'}</span>
+            <ChevronRight className="absolute right-4 lg:right-6 w-4 h-4 lg:w-5 lg:h-5 transition-all group-hover:translate-x-1" />
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
           </button>
 
           <button 
             onClick={handleComplete}
-            className="mono text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-[#CCFF00]/60 transition-colors pointer-events-auto"
+            className="mono text-[8px] lg:text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-[#CCFF00]/60 transition-colors pointer-events-auto py-2"
           >
-            Skip Briefing
+            Bypass Sequence
           </button>
         </div>
       </div>
