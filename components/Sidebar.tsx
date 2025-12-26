@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, RefreshCcw, Box, Circle, Heart, Disc, Dna, Activity, Zap } from 'lucide-react';
+import { Settings, RefreshCcw, Box, Circle, Heart, Disc, Dna, Activity, Zap, Info } from 'lucide-react';
 import { ParticleConfig, GestureState, VisualShape } from '../types';
 import { MIN_PARTICLES, MAX_PARTICLES } from '../constants';
 
@@ -9,10 +9,11 @@ interface SidebarProps {
   setConfig: (config: Partial<ParticleConfig>) => void;
   gestureState: GestureState;
   onReset: () => void;
+  onReplayBriefing?: () => void;
   trackingActive: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onReset, trackingActive }) => {
+const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onReset, onReplayBriefing, trackingActive }) => {
   const shapes: { id: VisualShape; icon: any }[] = [
     { id: 'sphere', icon: Circle },
     { id: 'cube', icon: Box },
@@ -116,13 +117,22 @@ const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onRe
           </div>
         </section>
 
-        <button 
-          onClick={onReset}
-          className="w-full flex items-center justify-center gap-3 py-4 bg-transparent border border-white/10 text-white/60 hover:text-white hover:border-white/40 transition-all text-[11px] mono font-bold uppercase tracking-widest group"
-        >
-          <RefreshCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
-          Purge Buffer
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button 
+            onClick={onReset}
+            className="flex items-center justify-center gap-3 py-4 bg-transparent border border-white/10 text-white/40 hover:text-white hover:border-white/40 transition-all text-[10px] mono font-bold uppercase tracking-widest group"
+          >
+            <RefreshCcw className="w-3 h-3 group-hover:rotate-180 transition-transform duration-500" />
+            Purge
+          </button>
+          <button 
+            onClick={onReplayBriefing}
+            className="flex items-center justify-center gap-3 py-4 bg-transparent border border-white/10 text-white/40 hover:text-[#CCFF00] hover:border-[#CCFF00]/40 transition-all text-[10px] mono font-bold uppercase tracking-widest"
+          >
+            <Info className="w-3 h-3" />
+            Briefing
+          </button>
+        </div>
       </div>
 
       {/* Footer Instructions */}

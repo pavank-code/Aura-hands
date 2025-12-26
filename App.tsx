@@ -3,12 +3,15 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AlertCircle, Zap, Instagram, Github, Camera, CornerDownRight } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import Visualizer from './components/Visualizer';
+import Cursor from './components/Cursor';
+import Onboarding from './components/Onboarding';
 import { handDetectionService } from './services/handDetectionService';
 import { ParticleConfig, GestureState, HandData } from './types';
 import { DEFAULT_CONFIG } from './constants';
 
 const App: React.FC = () => {
   const [config, setConfig] = useState<ParticleConfig>(DEFAULT_CONFIG);
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [gestureState, setGestureState] = useState<GestureState>({
     hands: [],
     distance: 0,
@@ -19,28 +22,51 @@ const App: React.FC = () => {
   
   const [status, setStatus] = useState<'idle' | 'initializing' | 'ready' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackingRef = useRef<boolean>(false);
+
+  // Check if user has been onboarded before
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('aura_onboarded');
+    if (!hasSeenOnboarding && status === 'ready') {
+      setShowOnboarding(true);
+    }
+  }, [status]);
 
   const startAura = async () => {
     setStatus('initializing');
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { width: 640, height: 480, frameRate: 30 } 
       });
+      
       const engineReady = await handDetectionService.initialize();
       if (!engineReady) throw new Error("Synthesis core failed to initialize.");
 
+      setStream(mediaStream);
+      
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        videoRef.current.srcObject = mediaStream;
         handDetectionService.setVideo(videoRef.current);
-        setStatus('ready');
-        trackingRef.current = true;
       }
+      
+      setStatus('ready');
+      trackingRef.current = true;
     } catch (err: any) {
       setStatus('error');
       setErrorMessage(err.message || "Input signal denied.");
     }
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    localStorage.setItem('aura_onboarded', 'true');
+  };
+
+  const replayBriefing = () => {
+    setShowOnboarding(true);
   };
 
   useEffect(() => {
@@ -131,14 +157,18 @@ const App: React.FC = () => {
       <video ref={videoRef} autoPlay playsInline muted className="fixed opacity-0 pointer-events-none" />
       
       {/* Interface Layer */}
-      <div className={`absolute inset-0 z-10 pointer-events-none transition-opacity duration-1000 ${status === 'ready' ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`absolute inset-0 z-10 pointer-events-none transition-all duration-1000 ${status === 'ready' ? 'opacity-100' : 'opacity-0'} ${showOnboarding ? 'blur-md grayscale brightness-50' : ''}`}>
         <Sidebar 
           config={config} 
           setConfig={handleConfigChange} 
           gestureState={gestureState}
           onReset={() => setConfig(DEFAULT_CONFIG)}
+          onReplayBriefing={replayBriefing}
           trackingActive={gestureState.hands.length > 0}
         />
+        
+        {/* Dynamic Cursor */}
+        <Cursor gestureState={gestureState} config={config} />
         
         {/* Subtle Branding Integration */}
         <div className="fixed bottom-10 right-10 z-50">
@@ -150,18 +180,28 @@ const App: React.FC = () => {
           <div className="absolute top-2 left-3 z-10 mono text-[8px] uppercase tracking-widest text-[#CCFF00] bg-black/60 px-2 py-0.5 border border-[#CCFF00]/20">
             Sensor Feed: Primary
           </div>
-          <video 
+          {stream && (
+            <video 
               autoPlay playsInline muted 
-              ref={(v) => { if(v && videoRef.current) v.srcObject = videoRef.current.srcObject; }}
-              className="w-full h-full object-cover grayscale brightness-125 contrast-125 opacity-60"
+              ref={(v) => { if(v) v.srcObject = stream; }}
+              className="w-full h-full object-cover grayscale brightness-110 contrast-110 opacity-70"
               style={{ transform: 'scaleX(-1)' }}
             />
+          )}
           <div className="absolute inset-0 border-[20px] border-transparent pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, transparent 0%, black 100%)' }} />
         </div>
       </div>
 
       <Visualizer config={config} gestureState={gestureState} />
       
+      {/* Onboarding Assistant Layer */}
+      {showOnboarding && (
+        <Onboarding 
+          accentColor="#CCFF00" 
+          onComplete={handleOnboardingComplete} 
+        />
+      )}
+
       {/* Splash Environment */}
       {status !== 'ready' && (
         <div className="fixed inset-0 bg-[#020202] flex items-center justify-center z-[100] p-12">

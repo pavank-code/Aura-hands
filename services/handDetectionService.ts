@@ -8,7 +8,7 @@ class HandDetectionService {
 
   /**
    * Initializes the MediaPipe HandLandmarker.
-   * Ensures VIDEO mode and detection of up to 2 hands.
+   * Configured with GPU delegate and float16 model for high-performance real-time tracking.
    */
   async initialize(): Promise<boolean> {
     if (this.landmarker) {
@@ -22,11 +22,12 @@ class HandDetectionService {
     this.isInitializing = true;
 
     try {
-      // Version 0.10.10 is highly stable for production use
+      // Load vision tasks with stable WASM binaries
       const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.10/wasm"
       );
       
+      // Explicitly utilizing GPU delegate for hardware acceleration
       this.landmarker = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
@@ -34,11 +35,12 @@ class HandDetectionService {
         },
         runningMode: "VIDEO",
         numHands: 2,
-        minHandDetectionConfidence: 0.5,
-        minHandPresenceConfidence: 0.5,
-        minTrackingConfidence: 0.5
+        minHandDetectionConfidence: 0.4,
+        minHandPresenceConfidence: 0.4,
+        minTrackingConfidence: 0.4
       });
       
+      console.debug("[HandDetection] Core initialized with GPU acceleration and optimized thresholds.");
       return true;
     } catch (error) {
       console.error("[HandDetection] Initialization error:", error);
@@ -60,6 +62,7 @@ class HandDetectionService {
   calculateHandOpenness(landmarks: any[]): boolean {
     if (!landmarks || landmarks.length === 0) return false;
     
+    // Simple heuristic: compare finger tips distance from wrist
     const wrist = landmarks[0];
     const tips = [8, 12, 16, 20].map(i => landmarks[i]);
     
@@ -71,6 +74,7 @@ class HandDetectionService {
     });
     
     const avgDist = distances.reduce((a, b) => a + b, 0) / distances.length;
+    // Threshold adjusted for better responsiveness on most hand sizes
     return avgDist > 0.22;
   }
 }
