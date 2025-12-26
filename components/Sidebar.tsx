@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, RefreshCcw, Box, Circle, Heart, Disc, Dna } from 'lucide-react';
+import { Settings, RefreshCcw, Box, Circle, Heart, Disc, Dna, Activity, Zap } from 'lucide-react';
 import { ParticleConfig, GestureState, VisualShape } from '../types';
 import { MIN_PARTICLES, MAX_PARTICLES } from '../constants';
 
@@ -22,28 +22,36 @@ const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onRe
   ];
 
   return (
-    <div className="fixed left-6 top-6 bottom-6 w-80 glass rounded-[2.5rem] p-8 flex flex-col gap-10 z-50 pointer-events-auto overflow-y-auto border-white/5">
-      <div className="flex items-center gap-4">
-        <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20">
-          <Settings className="w-6 h-6 text-purple-400" />
+    <div className="fixed left-0 top-0 bottom-0 w-[340px] hud-panel p-0 flex flex-col z-50 pointer-events-auto border-r border-white/10 shadow-2xl">
+      {/* Brand Header */}
+      <div className="p-8 border-b border-white/5 bg-white/[0.02]">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-bold tracking-tighter uppercase italic">Aura<span className="text-[#CCFF00]">Hands</span></h1>
+          <div className="flex items-center gap-2 px-2 py-1 bg-[#CCFF00]/10 border border-[#CCFF00]/20 rounded">
+            <Activity className="w-3 h-3 text-[#CCFF00]" />
+            <span className="text-[9px] mono font-bold text-[#CCFF00]">v2.4.0</span>
+          </div>
         </div>
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">AuraHands</h1>
-          <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Neural Particle Engine</p>
-        </div>
+        <p className="text-[10px] mono text-white/40 uppercase tracking-widest leading-tight">Kinetic Synthesis Environment</p>
       </div>
 
-      <div className="space-y-8">
-        {/* Shape Selector */}
+      <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
+        {/* Module: Geometric Primitive */}
         <section className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Geometric Matrix</h3>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="flex items-center justify-between border-b border-white/5 pb-2">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60 flex items-center gap-2">
+              <Box className="w-3 h-3" /> Primitive Matrix
+            </h3>
+          </div>
+          <div className="grid grid-cols-5 gap-1">
             {shapes.map(({ id, icon: Icon }) => (
               <button
                 key={id}
                 onClick={() => setConfig({ shape: id })}
-                className={`p-3 rounded-2xl flex items-center justify-center transition-all ${
-                  config.shape === id ? 'bg-white text-black scale-110 shadow-xl shadow-white/10' : 'bg-white/5 text-white/40 hover:bg-white/10'
+                className={`h-12 flex items-center justify-center transition-all border ${
+                  config.shape === id 
+                    ? 'bg-[#CCFF00] text-black border-[#CCFF00] shadow-[0_0_15px_rgba(204,255,0,0.3)]' 
+                    : 'bg-white/[0.03] text-white/40 border-white/10 hover:border-white/30'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -52,79 +60,86 @@ const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, gestureState, onRe
           </div>
         </section>
 
-        {/* Tracking Status */}
+        {/* Module: Neural Telemetry */}
         <section className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Real-time Feed</h3>
-          <div className="flex items-center gap-3 bg-white/5 p-4 rounded-3xl border border-white/5">
-            <div className={`w-2 h-2 rounded-full ${trackingActive ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6)] animate-pulse'}`} />
-            <span className="text-xs font-bold uppercase tracking-wider">{trackingActive ? 'Neural Lock Acquired' : 'Seeking Signal...'}</span>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white/5 p-4 rounded-3xl text-center border border-white/5">
-              <span className="block text-[10px] text-white/30 uppercase font-black mb-1">Density</span>
-              <span className="text-xl font-mono">{(config.count / 1000).toFixed(0)}k</span>
+          <div className="flex items-center justify-between border-b border-white/5 pb-2">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60 flex items-center gap-2">
+              <Zap className="w-3 h-3" /> Telemetry
+            </h3>
+            <div className={`text-[9px] mono px-2 py-0.5 rounded border ${trackingActive ? 'text-[#CCFF00] border-[#CCFF00]/30' : 'text-red-500 border-red-500/30'}`}>
+              {trackingActive ? 'LOCKED' : 'DISCONNECTED'}
             </div>
-            <div className="bg-white/5 p-4 rounded-3xl text-center border border-white/5">
-              <span className="block text-[10px] text-white/30 uppercase font-black mb-1">Scale</span>
-              <span className="text-xl font-mono">{gestureState.expansion.toFixed(1)}</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-white/[0.03] p-4 border border-white/5">
+              <span className="block text-[9px] mono text-white/30 uppercase mb-2">Particle Density</span>
+              <span className="text-xl font-bold mono">{(config.count / 1000).toFixed(1)}<span className="text-[#CCFF00]">K</span></span>
+            </div>
+            <div className="bg-white/[0.03] p-4 border border-white/5">
+              <span className="block text-[9px] mono text-white/30 uppercase mb-2">Expansion Ratio</span>
+              <span className="text-xl font-bold mono">x{gestureState.expansion.toFixed(2)}</span>
             </div>
           </div>
         </section>
 
-        {/* Color Controls */}
+        {/* Module: Chromatic Controls */}
         <section className="space-y-6">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Visual Params</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between text-[10px] font-bold uppercase opacity-40">
-              <span>Hue Spectrum</span>
-              <span>{config.hue}°</span>
-            </div>
-            <input 
-              type="range" min="0" max="360" value={config.hue}
-              onChange={(e) => setConfig({ hue: parseInt(e.target.value) })}
-              className="w-full accent-white h-1 bg-white/10 rounded-full appearance-none cursor-pointer"
-            />
+          <div className="flex items-center justify-between border-b border-white/5 pb-2">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60">Visual Parameters</h3>
           </div>
-          <div className="space-y-3">
-            <div className="flex justify-between text-[10px] font-bold uppercase opacity-40">
-              <span>Particle Saturation</span>
-              <span>{config.saturation}%</span>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between mono text-[10px]">
+                <span className="text-white/40 uppercase">Hue Shift</span>
+                <span className="text-[#CCFF00]">{config.hue}°</span>
+              </div>
+              <input 
+                type="range" min="0" max="360" value={config.hue}
+                onChange={(e) => setConfig({ hue: parseInt(e.target.value) })}
+                className="w-full h-1 bg-white/10 rounded-none appearance-none cursor-pointer"
+              />
             </div>
-            <input 
-              type="range" min="0" max="100" value={config.saturation}
-              onChange={(e) => setConfig({ saturation: parseInt(e.target.value) })}
-              className="w-full accent-white h-1 bg-white/10 rounded-full appearance-none cursor-pointer"
-            />
-          </div>
-        </section>
 
-        {/* Density */}
-        <section className="space-y-3">
-          <div className="flex justify-between text-[10px] font-bold uppercase opacity-40">
-            <span>Particle Count</span>
-            <span>{config.count.toLocaleString()}</span>
+            <div className="space-y-2">
+              <div className="flex justify-between mono text-[10px]">
+                <span className="text-white/40 uppercase">Density Load</span>
+                <span className="text-[#CCFF00]">{config.count.toLocaleString()}</span>
+              </div>
+              <input 
+                type="range" min={MIN_PARTICLES} max={MAX_PARTICLES} step="5000" value={config.count}
+                onChange={(e) => setConfig({ count: parseInt(e.target.value) })}
+                className="w-full h-1 bg-white/10 rounded-none appearance-none cursor-pointer"
+              />
+            </div>
           </div>
-          <input 
-            type="range" min={MIN_PARTICLES} max={MAX_PARTICLES} step="5000" value={config.count}
-            onChange={(e) => setConfig({ count: parseInt(e.target.value) })}
-            className="w-full accent-white h-1 bg-white/10 rounded-full appearance-none cursor-pointer"
-          />
         </section>
 
         <button 
           onClick={onReset}
-          className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-white text-black hover:bg-white/90 transition-all rounded-2xl text-xs font-black uppercase tracking-[0.1em]"
+          className="w-full flex items-center justify-center gap-3 py-4 bg-transparent border border-white/10 text-white/60 hover:text-white hover:border-white/40 transition-all text-[11px] mono font-bold uppercase tracking-widest group"
         >
-          <RefreshCcw className="w-4 h-4" />
-          Reset Neural Core
+          <RefreshCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+          Purge Buffer
         </button>
       </div>
 
-      <div className="mt-auto pt-6 border-t border-white/5">
-        <div className="space-y-3 text-[9px] font-bold uppercase tracking-widest text-white/30 leading-loose">
-          <p>• <span className="text-white/60">Zoom:</span> Distance between hands</p>
-          <p>• <span className="text-white/60">Rotate:</span> Position of right hand</p>
-          <p>• <span className="text-white/60">Sculpt:</span> Clench fist to shrink</p>
+      {/* Footer Instructions */}
+      <div className="p-8 border-t border-white/5 bg-white/[0.01]">
+        <div className="grid grid-cols-1 gap-2 mono text-[9px] uppercase tracking-wider text-white/40">
+          <div className="flex justify-between border-b border-white/5 pb-1">
+            <span>Spatial Zoom</span>
+            <span className="text-white/60">Distance</span>
+          </div>
+          <div className="flex justify-between border-b border-white/5 pb-1">
+            <span>Axis Rotation</span>
+            <span className="text-white/60">Right Hand</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Core Compression</span>
+            <span className="text-white/60">Pinch</span>
+          </div>
         </div>
       </div>
     </div>

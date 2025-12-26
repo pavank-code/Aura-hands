@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Camera, AlertCircle, Sparkles, Instagram, Github } from 'lucide-react';
+import { AlertCircle, Zap, Instagram, Github, Camera, CornerDownRight } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import Visualizer from './components/Visualizer';
 import { handDetectionService } from './services/handDetectionService';
@@ -29,7 +29,7 @@ const App: React.FC = () => {
         video: { width: 640, height: 480, frameRate: 30 } 
       });
       const engineReady = await handDetectionService.initialize();
-      if (!engineReady) throw new Error("Hand tracking engine failed.");
+      if (!engineReady) throw new Error("Synthesis core failed to initialize.");
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -39,7 +39,7 @@ const App: React.FC = () => {
       }
     } catch (err: any) {
       setStatus('error');
-      setErrorMessage(err.message || "Camera access denied.");
+      setErrorMessage(err.message || "Input signal denied.");
     }
   };
 
@@ -101,36 +101,36 @@ const App: React.FC = () => {
     setConfig(prev => ({ ...prev, ...newConfig }));
   }, []);
 
-  const PersonalBranding = ({ className = "" }: { className?: string }) => (
-    <div className={`flex flex-col items-center gap-3 transition-all duration-700 ${className}`}>
-      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Developed by</span>
-      <h3 className="text-xl font-bold tracking-tighter bg-gradient-to-r from-purple-400 via-white to-purple-400 bg-clip-text text-transparent">Pavan</h3>
-      <div className="flex gap-4">
+  const Signature = ({ className = "" }: { className?: string }) => (
+    <div className={`flex flex-col items-start mono ${className}`}>
+      <div className="flex items-center gap-2 text-[9px] text-white/30 uppercase tracking-[0.4em] font-bold mb-1">
+        <CornerDownRight className="w-2 h-2" /> Engineered By
+      </div>
+      <h3 className="text-xl font-bold tracking-tighter uppercase italic leading-none mb-4">Pavan <span className="text-[#CCFF00]">/</span> Team401forbidden</h3>
+      <div className="flex gap-2">
         <a 
           href="https://instagram.com/notpavanistg" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors pointer-events-auto group"
+          target="_blank" rel="noopener noreferrer" 
+          className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 hover:border-[#CCFF00]/50 hover:bg-[#CCFF00]/5 transition-all text-[9px] mono uppercase font-bold text-white/40 hover:text-[#CCFF00] pointer-events-auto"
         >
-          <Instagram className="w-4 h-4 text-white/40 group-hover:text-purple-400 transition-colors" />
+          <Instagram className="w-3 h-3" /> @notpavanistg
         </a>
         <a 
           href="https://github.com/pavank-code" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors pointer-events-auto group"
+          target="_blank" rel="noopener noreferrer" 
+          className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 hover:border-[#CCFF00]/50 hover:bg-[#CCFF00]/5 transition-all text-[9px] mono uppercase font-bold text-white/40 hover:text-[#CCFF00] pointer-events-auto"
         >
-          <Github className="w-4 h-4 text-white/40 group-hover:text-purple-400 transition-colors" />
+          <Github className="w-3 h-3" /> pavank-code
         </a>
       </div>
     </div>
   );
 
   return (
-    <div className="relative w-full h-screen overflow-hidden text-white bg-[#050505]">
+    <div className="relative w-full h-screen overflow-hidden text-white bg-[#020202]">
       <video ref={videoRef} autoPlay playsInline muted className="fixed opacity-0 pointer-events-none" />
       
-      {/* Live UI Layer */}
+      {/* Interface Layer */}
       <div className={`absolute inset-0 z-10 pointer-events-none transition-opacity duration-1000 ${status === 'ready' ? 'opacity-100' : 'opacity-0'}`}>
         <Sidebar 
           config={config} 
@@ -140,72 +140,100 @@ const App: React.FC = () => {
           trackingActive={gestureState.hands.length > 0}
         />
         
-        {/* Floating Branding when active */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-          <PersonalBranding className="scale-90" />
+        {/* Subtle Branding Integration */}
+        <div className="fixed bottom-10 right-10 z-50">
+          <Signature />
         </div>
 
-        <div className="fixed bottom-6 right-6 w-48 h-36 glass rounded-3xl overflow-hidden border-white/10">
-           <video 
+        {/* Diagnostic Input Preview */}
+        <div className="fixed top-10 right-10 w-64 h-48 bg-black/40 border border-white/10 overflow-hidden shadow-2xl">
+          <div className="absolute top-2 left-3 z-10 mono text-[8px] uppercase tracking-widest text-[#CCFF00] bg-black/60 px-2 py-0.5 border border-[#CCFF00]/20">
+            Sensor Feed: Primary
+          </div>
+          <video 
               autoPlay playsInline muted 
               ref={(v) => { if(v && videoRef.current) v.srcObject = videoRef.current.srcObject; }}
-              className="w-full h-full object-cover grayscale opacity-40"
+              className="w-full h-full object-cover grayscale brightness-125 contrast-125 opacity-60"
               style={{ transform: 'scaleX(-1)' }}
             />
+          <div className="absolute inset-0 border-[20px] border-transparent pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, transparent 0%, black 100%)' }} />
         </div>
       </div>
 
       <Visualizer config={config} gestureState={gestureState} />
       
-      {/* Splash / Loading Screen */}
+      {/* Splash Environment */}
       {status !== 'ready' && (
-        <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-[100] p-10 backdrop-blur-md">
-          <div className="max-w-md text-center space-y-12">
-            <div className="space-y-8">
-              <div className="relative inline-block">
-                <div className="absolute inset-0 bg-purple-500/20 blur-3xl rounded-full" />
-                <div className="relative p-6 bg-white/5 border border-white/10 rounded-[2.5rem] shadow-2xl">
-                  {status === 'error' ? <AlertCircle className="w-16 h-16 text-red-400" /> : <Sparkles className="w-16 h-16 text-purple-400 animate-pulse" />}
-                </div>
-              </div>
-              
+        <div className="fixed inset-0 bg-[#020202] flex items-center justify-center z-[100] p-12">
+          <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+            <div className="space-y-12">
               <div className="space-y-4">
-                <h2 className="text-6xl font-black tracking-tighter bg-gradient-to-b from-white to-white/30 bg-clip-text text-transparent">AuraHands</h2>
-                <p className="text-white/40 text-lg font-medium leading-relaxed">Neural Particle Engine with Real-time Hand Presence</p>
+                <div className="inline-flex items-center gap-3 px-3 py-1 bg-[#CCFF00]/10 border border-[#CCFF00]/20 text-[#CCFF00] mono text-[10px] font-bold uppercase tracking-[0.3em]">
+                  <Zap className="w-3 h-3 fill-current" /> System Ready
+                </div>
+                <h2 className="text-8xl font-black tracking-tighter uppercase italic leading-[0.85] text-white">
+                  Aura<br/><span className="text-[#CCFF00]">Hands</span>
+                </h2>
+                <p className="text-white/30 text-xl font-medium max-w-md leading-snug">
+                  High-fidelity kinetic synthesis environment powered by real-time hand presence.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-8 items-start">
+                {status === 'idle' && (
+                  <button 
+                    onClick={startAura} 
+                    className="group relative px-10 py-5 bg-[#CCFF00] text-black font-bold uppercase tracking-widest transition-all hover:pr-14 active:scale-95 pointer-events-auto"
+                  >
+                    Initialize Core
+                    <CornerDownRight className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all" />
+                  </button>
+                )}
+
+                {status === 'initializing' && (
+                  <div className="flex flex-col gap-2">
+                    <div className="w-48 h-1 bg-white/10 overflow-hidden">
+                      <div className="w-1/2 h-full bg-[#CCFF00] animate-[shimmer_1.5s_infinite]" />
+                    </div>
+                    <span className="mono text-[9px] uppercase tracking-widest text-[#CCFF00] animate-pulse">Syncing Neural Buffers...</span>
+                  </div>
+                )}
+
+                {status === 'error' && (
+                  <div className="space-y-4">
+                    <p className="mono text-red-500 text-xs font-bold uppercase flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" /> Error: {errorMessage}
+                    </p>
+                    <button onClick={startAura} className="px-6 py-3 border border-red-500/20 text-red-500 mono uppercase text-[10px] font-bold pointer-events-auto hover:bg-red-500/10 transition-all">Re-establish Link</button>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex flex-col gap-6 items-center">
-              {status === 'idle' && (
-                <button 
-                  onClick={startAura} 
-                  className="group relative px-12 py-6 bg-white text-black font-black uppercase tracking-widest rounded-2xl transition-all hover:scale-105 active:scale-95 pointer-events-auto shadow-[0_20px_40px_-10px_rgba(255,255,255,0.2)]"
-                >
-                  Enter Interface
-                </button>
-              )}
-
-              {status === 'initializing' && (
-                <div className="flex items-center justify-center gap-3 text-purple-400 font-black uppercase tracking-widest animate-pulse text-xs">
-                  Neural Sync in Progress...
+            <div className="hidden md:block border-l border-white/5 pl-20 space-y-12">
+              <Signature />
+              
+              <div className="space-y-6">
+                <h4 className="mono text-[10px] text-white/20 uppercase tracking-[0.4em] font-bold">Operational Guide</h4>
+                <div className="space-y-4 mono text-[11px] text-white/40 uppercase tracking-widest leading-loose">
+                  <p className="flex items-center gap-4"><span className="w-1.5 h-1.5 bg-[#CCFF00]" /> Use dual-hand separation for hyper-zoom</p>
+                  <p className="flex items-center gap-4"><span className="w-1.5 h-1.5 bg-[#CCFF00]" /> Right hand position dictates axis rotation</p>
+                  <p className="flex items-center gap-4"><span className="w-1.5 h-1.5 bg-[#CCFF00]" /> Clench for compression, open for bloom</p>
                 </div>
-              )}
-
-              {status === 'error' && (
-                <div className="space-y-4">
-                  <p className="text-red-400 text-sm font-bold uppercase">{errorMessage}</p>
-                  <button onClick={startAura} className="px-8 py-4 bg-red-500/10 text-red-400 border border-red-500/20 font-black uppercase text-xs rounded-xl pointer-events-auto hover:bg-red-500/20 transition-all">Retry Link</button>
-                </div>
-              )}
-            </div>
-
-            {/* Bottom Branding on Splash */}
-            <div className="pt-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
-               <PersonalBranding />
+              </div>
             </div>
           </div>
         </div>
       )}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 2px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+      `}</style>
     </div>
   );
 };
